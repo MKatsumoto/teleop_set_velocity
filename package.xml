@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <name>teleop_set_velocity</name>
+  <version>0.0.1</version>
+  <description>The teleop_set_velocity package</description>
+  <maintainer email="winbook1216.m@gmail.com">Masahiro Katsumoto</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>gecko_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>gecko_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <export>
+  </export>
+</package>
