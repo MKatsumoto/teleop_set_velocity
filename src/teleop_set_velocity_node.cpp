@@ -55,24 +55,31 @@ TeleopSetVelocity::TeleopSetVelocity()
 /*!
  * \brief Compute base & flipper velocity from joy message, and publish them.
  * \param msg
+ *
+ * WARN: Cannot control both crawler and flipper at the same time.
  */
 void TeleopSetVelocity::joyCallback(const sensor_msgs::Joy::ConstPtr &msg)
 {
-  static const int LINEAR_VELOCITY_SCALE  = 100;
-  static const int ANGULAR_VELOCITY_SCALE = 200;
-  static const int FLIPPER_VELOCITY_SCALE = 100;
+  static const int VELOCITY_SCALE  = 100;
 
   gecko_msgs::BaseVelocity    base_velocity;
   gecko_msgs::FlipperVelocity flipper_velocity;
 
-  base_velocity.linear  = - msg->axes[1] * LINEAR_VELOCITY_SCALE;
-  base_velocity.angular =   msg->axes[2] * ANGULAR_VELOCITY_SCALE;
-  // フリッパーの正転・逆転は十字ボタンの上下(msg->axes[5])で決まる
-  flipper_velocity.front_left  = msg->axes[5] * msg->buttons[7] * FLIPPER_VELOCITY_SCALE;
-  flipper_velocity.rear_left   = msg->axes[5] * msg->buttons[5] * FLIPPER_VELOCITY_SCALE;
-  flipper_velocity.front_right = msg->axes[5] * msg->buttons[4] * FLIPPER_VELOCITY_SCALE;
-  flipper_velocity.rear_right  = msg->axes[5] * msg->buttons[6] * FLIPPER_VELOCITY_SCALE;
+  bool flipper_active = static_cast<bool>(msg->buttons[4] || msg->buttons[5] || msg->buttons[6] || msg->buttons[7]);
 
-  base_velocity_pub_.publish(base_velocity);
-  flipper_velocity_pub_.publish(flipper_velocity);
+  if (flipper_active)
+  {
+    // フリッパーの正転・逆転は十字ボタンの上下(msg->axes[5])で決まる
+    flipper_velocity.front_left  = msg->axes[1] * msg->buttons[4] * VELOCITY_SCALE;
+    flipper_velocity.rear_left   = msg->axes[1] * msg->buttons[6] * VELOCITY_SCALE;
+    flipper_velocity.front_right = msg->axes[1] * msg->buttons[5] * VELOCITY_SCALE;
+    flipper_velocity.rear_right  = msg->axes[1] * msg->buttons[7] * VELOCITY_SCALE;
+    flipper_velocity_pub_.publish(flipper_velocity);
+  }
+  else
+  {
+    base_velocity.linear  = msg->axes[1] * VELOCITY_SCALE;
+    base_velocity.angular = msg->axes[2] * VELOCITY_SCALE;
+    base_velocity_pub_.publish(base_velocity);
+  }
 }
